@@ -15,7 +15,6 @@
 <body>
 <%!Map<String, String> fieldsMap = new HashMap<String,String>(); %>
 <%
-
 		//Standard Fields
 		fieldsMap.put("Client ID", "IMS_Client_Id__c");
 		fieldsMap.put("Client Program Id","IMS_Client_Program_Id__c"); 
