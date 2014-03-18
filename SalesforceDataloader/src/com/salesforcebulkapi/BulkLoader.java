@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,17 +29,92 @@ import com.sforce.ws.ConnectorConfig;
 
 public class BulkLoader {
 
+static Map<String,String> salesforcecols=new HashMap<String,String>();
+static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
+	
   public static void main(String[] args) throws AsyncApiException,
       ConnectionException, IOException {
-    BulkLoader example = new BulkLoader();
+   
     //example.run();
+  }
+  
+  public static void initializeFields()
+  {
+		
+		//Standard Fields
+		salesforcecols.put("Client ID", "IMS_Client_Id__c");
+		salesforcecols.put("Client Program Id","IMS_Client_Program_Id__c"); 
+		salesforcecols.put( "First Name","FirstName"  );
+		salesforcecols.put( "Last Name","LastName" );
+		salesforcecols.put( "Title", "Title");
+		salesforcecols.put( "Title Type", "IMS_Title_Type__c");
+		salesforcecols.put( "Company","Company"); 
+		salesforcecols.put( "Contact Purchasing Role", "IMS_Contact_Role__c");
+		salesforcecols.put( "Phone", "Phone");
+		salesforcecols.put( "Direct Phone", "IMS_Direct_Phone__c");
+		salesforcecols.put( "Fax", "Fax");
+		salesforcecols.put( "Mobile","MobilePhone" );
+		salesforcecols.put( "Email", "Email");
+		//salesforcecols.put( "Address1", "Address1");
+		//salesforcecols.put( "Address2","Address2"); 
+		salesforcecols.put( "City", "City");
+		salesforcecols.put( "State", "State");
+		salesforcecols.put( "Postal", "PostalCode");
+		salesforcecols.put( "Country", "Country");
+		salesforcecols.put( "SIC CODE", "IMS_SIC_Code__c");
+		salesforcecols.put( "SIC Description" ,"IMS_SIC_Description__c");
+		salesforcecols.put( "DUNS No", "IMS_DUNS_No__c");
+		salesforcecols.put( "NAICS Codes", "IMS_NAICS_Codes__c");
+		salesforcecols.put( "Employee Size", "IMS_Employee_Size__c");
+		salesforcecols.put(  "Revenue Size", "IMS_Revenue_Size__c");
+		salesforcecols.put(  "Lead Source","LeadSource");
+		salesforcecols.put(  "Record Source", "IMS_Record_Source__c");
+		salesforcecols.put(  "Record Source Detail","IMS_Record_Source_Detail__c"); 
+		salesforcecols.put( "Website", "Website");
+		salesforcecols.put( "Company Type","IMS_Company_Type__c"); 
+		salesforcecols.put( "Company Location Type","IMS_Location_Type__c"); 
+		salesforcecols.put( "Industry", "Industry");
+		salesforcecols.put( "Description","Description");
+		//Required fields
+		salesforcecols.put("Client ID","IMS_Client_Id__c" );
+		salesforcecols.put("Client Program Id","IMS_Client_Program_Id__c" );
+		salesforcecols.put("Last Name","LastName" );
+		salesforcecols.put("Company","Company" );
+		//Affigient fields
+		salesforcecols.put("AF Database Size","AF_Database_Size__c");
+		salesforcecols.put("AF Retention Requirement","AF_Retention_Requirement__c");
+		salesforcecols.put("Backup Software","IMS_Backup_Software__c");
+		salesforcecols.put("Govt Agency","IMS_Govt_Agency__c");
+		salesforcecols.put("Govt.Office","IMS_Govt_Office__c");
+		salesforcecols.put("AF Contractor","AF_Contractor__c");
+		salesforcecols.put("Network","Network__c");
+		salesforcecols.put("VISN","VISN__c");
+  }
+  public static void getMap(Map map,String file)
+  {
+	  initializeFields();
+	  bl_fieldsMap=map;
+	  BulkLoader example = new BulkLoader();
+	  try {
+		example.runJob("Lead", "itstaff@invenio.com.isb", "Th3t@1126", file);
+	} catch (AsyncApiException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ConnectionException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 
+
+
   }
   /**
    * Creates a Bulk API job and uploads batches for a CSV file.
    */
-  public String runJob(String sobjectType, String userName, String password,
-      String sampleFileName) throws AsyncApiException, ConnectionException,
-      IOException {
+  public String runJob(String sobjectType, String userName, String password, String sampleFileName) throws AsyncApiException, ConnectionException, IOException {
     RestConnection connection = getRestConnection(userName, password);
     JobInfo job = createJob(sobjectType, connection);
     List<BatchInfo> batchInfoList = createBatchesFromCSVFile(connection, job,sampleFileName);
@@ -99,7 +175,7 @@ public class BulkLoader {
    * Wait for a job to complete by polling the Bulk API.
    */
   private void awaitCompletion(RestConnection connection, JobInfo job,
-      List<BatchInfo> batchInfoList) throws AsyncApiException {
+    List<BatchInfo> batchInfoList) throws AsyncApiException {
     long sleepTime = 0L;
     Set<String> incomplete = new HashSet<String>();
     for (BatchInfo bi : batchInfoList) {
@@ -147,8 +223,7 @@ public class BulkLoader {
     ConnectorConfig partnerConfig = new ConnectorConfig();
     partnerConfig.setUsername(userName);
     partnerConfig.setPassword(password);
-    partnerConfig
-        .setAuthEndpoint("https://www.salesforce.com/services/Soap/u/17.0");
+    partnerConfig.setAuthEndpoint("https://test.salesforce.com/services/Soap/u/17.0");
     // Creating the connection automatically handles login and stores
     // the session in partnerConfig
     new PartnerConnection(partnerConfig);
@@ -184,13 +259,33 @@ public class BulkLoader {
     BufferedReader rdr = new BufferedReader(new InputStreamReader(
         new FileInputStream(csvFileName)));
     // read the CSV header row
-    byte[] headerBytes = (rdr.readLine() + "\n").getBytes("UTF-8");
+    String headername=rdr.readLine();
+	 
+	 Set s = bl_fieldsMap.entrySet();
+	 Iterator it = s.iterator();
+	 while(it.hasNext()){
+	 Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>)it.next();
+	 String key=entry.getKey();
+	 String[] value=entry.getValue();
+
+	 //System.out.println("Key is "+key+"<br>");
+	 //System.out.println("Value is "+value[0].toString()+"<br>");
+
+	 //System.out.println("-------------------<br>");
+	 
+	 headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key).toString());
+	 
+
+	 }
+	 System.out.println("header"+headername);
+    
+    byte[] headerBytes = ( headername+ "\n").getBytes("UTF-8");
     int headerBytesLength = headerBytes.length;
     File tmpFile = File.createTempFile("bulkAPIInsert", ".csv");
-
     // Split the CSV file into multiple batches
     try {
       FileOutputStream tmpOut = new FileOutputStream(tmpFile);
+      
       int maxBytesPerBatch = 10000000; // 10 million bytes per batch
       int maxRowsPerBatch = 10000; // 10 thousand rows per batch
       int currentBytes = 0;

@@ -13,8 +13,20 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/opencsv-2.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/partner-bulk-loader.jar"/>
-	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/wsc-17_0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/opencsv-2.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/partner-bulk-loader.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/KVP/Documents/NetBeansProjects/SalesforceBulkAPIDemo/SalesforceBulkAPIDemo/lib/wsc-17_0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
