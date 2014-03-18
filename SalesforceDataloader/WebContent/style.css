@@ -123,6 +123,42 @@ h1 > span {
   white-space: normal;
 }
 
+h2 {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  letter-spacing: -0.05em;
+  margin-bottom: 20px;
+  padding: .1em 0;
+  color: #444;
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+}
+h2:before,
+h2:after {
+  content: "";
+  position: relative;
+  display: inline-block;
+  width: 50%;
+  height: 1px;
+  vertical-align: middle;
+  background: #f0f0f0;
+}
+h2:before {    
+  left: -.5em;
+  margin: 0 0 0 -50%;
+}
+h2:after {    
+  left: .5em;
+  margin: 0 -50% 0 0;
+}
+h2 > span {
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+}
 p {
   display: block;
   font-size: 1.35em;

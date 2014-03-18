@@ -4,11 +4,15 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+  <link rel="stylesheet" type="text/css" media="all" href="style.css">
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
+  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
+<title>Some error occured</title>
 </head>
 <body>
 <center>
-<h3>Oops!!! Some <font color='red'>ERROR</font> occured...<br>Please try again</h3>
+<h2>Oops!!! Some <font color='red'>ERROR</font> occured...<br>Please try again</h2>
 </center>
 </body>
 </html>

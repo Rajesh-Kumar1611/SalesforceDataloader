@@ -9,6 +9,7 @@
   <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
   <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
+  
 </head>
 <body>
 <div>
@@ -19,7 +20,7 @@
       <input type="text" name="username" id="username" class="txtfield" tabindex="1">
       <label for="password">Password:</label>
       <input type="password" name="password" id="password" class="txtfield" tabindex="2">
-      <div class="center"><input type="submit" name="loginbtn" id="loginbtn" class="flatbtn-blu hidemodal" value="Log In" tabindex="3"></div>
+      <div class="center"><input  type="submit" name="loginbtn" id="loginbtn" class="flatbtn-blu hidemodal" value="Log In" tabindex="3" onclick="validatePassword()"/></div>
     </form>
   </div>
 </div>

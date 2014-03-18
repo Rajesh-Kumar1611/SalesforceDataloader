@@ -40,63 +40,15 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
   
   public static void initializeFields()
   {
-		
-		//Standard Fields
-		salesforcecols.put("Client ID", "IMS_Client_Id__c");
-		salesforcecols.put("Client Program Id","IMS_Client_Program_Id__c"); 
-		salesforcecols.put( "First Name","FirstName"  );
-		salesforcecols.put( "Last Name","LastName" );
-		salesforcecols.put( "Title", "Title");
-		salesforcecols.put( "Title Type", "IMS_Title_Type__c");
-		salesforcecols.put( "Company","Company"); 
-		salesforcecols.put( "Contact Purchasing Role", "IMS_Contact_Role__c");
-		salesforcecols.put( "Phone", "Phone");
-		salesforcecols.put( "Direct Phone", "IMS_Direct_Phone__c");
-		salesforcecols.put( "Fax", "Fax");
-		salesforcecols.put( "Mobile","MobilePhone" );
-		salesforcecols.put( "Email", "Email");
-		//salesforcecols.put( "Address1", "Address1");
-		//salesforcecols.put( "Address2","Address2"); 
-		salesforcecols.put( "City", "City");
-		salesforcecols.put( "State", "State");
-		salesforcecols.put( "Postal", "PostalCode");
-		salesforcecols.put( "Country", "Country");
-		salesforcecols.put( "SIC CODE", "IMS_SIC_Code__c");
-		salesforcecols.put( "SIC Description" ,"IMS_SIC_Description__c");
-		salesforcecols.put( "DUNS No", "IMS_DUNS_No__c");
-		salesforcecols.put( "NAICS Codes", "IMS_NAICS_Codes__c");
-		salesforcecols.put( "Employee Size", "IMS_Employee_Size__c");
-		salesforcecols.put(  "Revenue Size", "IMS_Revenue_Size__c");
-		salesforcecols.put(  "Lead Source","LeadSource");
-		salesforcecols.put(  "Record Source", "IMS_Record_Source__c");
-		salesforcecols.put(  "Record Source Detail","IMS_Record_Source_Detail__c"); 
-		salesforcecols.put( "Website", "Website");
-		salesforcecols.put( "Company Type","IMS_Company_Type__c"); 
-		salesforcecols.put( "Company Location Type","IMS_Location_Type__c"); 
-		salesforcecols.put( "Industry", "Industry");
-		salesforcecols.put( "Description","Description");
-		//Required fields
-		salesforcecols.put("Client ID","IMS_Client_Id__c" );
-		salesforcecols.put("Client Program Id","IMS_Client_Program_Id__c" );
-		salesforcecols.put("Last Name","LastName" );
-		salesforcecols.put("Company","Company" );
-		//Affigient fields
-		salesforcecols.put("AF Database Size","AF_Database_Size__c");
-		salesforcecols.put("AF Retention Requirement","AF_Retention_Requirement__c");
-		salesforcecols.put("Backup Software","IMS_Backup_Software__c");
-		salesforcecols.put("Govt Agency","IMS_Govt_Agency__c");
-		salesforcecols.put("Govt.Office","IMS_Govt_Office__c");
-		salesforcecols.put("AF Contractor","AF_Contractor__c");
-		salesforcecols.put("Network","Network__c");
-		salesforcecols.put("VISN","VISN__c");
+	salesforcecols=Maps.getAffigientFieldMapping();
   }
-  public static void getMap(Map map,String file)
+  public static void getMap(Map map,String file,String username,String password)
   {
 	  initializeFields();
 	  bl_fieldsMap=map;
 	  BulkLoader example = new BulkLoader();
 	  try {
-		example.runJob("Lead", "itstaff@invenio.com.isb", "Th3t@1126", file);
+		example.runJob("Lead", username,password , file);
 	} catch (AsyncApiException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

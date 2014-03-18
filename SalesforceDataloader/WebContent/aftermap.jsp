@@ -9,12 +9,18 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" media="all" href="style.css">
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
+  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
 <title>Insert title here</title>
 </head>
 <body>
 <% 
 Map<String,String[]> m=request.getParameterMap();
-BulkLoader.getMap(m,session.getAttribute("filename").toString());
+BulkLoader.getMap(m,session.getAttribute("filename").toString(),session.getAttribute("username").toString(),session.getAttribute("password").toString());
 %>
 </body>
 </html>

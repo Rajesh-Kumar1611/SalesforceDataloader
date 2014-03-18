@@ -13,9 +13,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" media="all" href="style.css">
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
+  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
 </head>
 <body>
 <form action="aftermap.jsp">
+<center>
 <table>
 
 <%
@@ -98,7 +105,7 @@ try {
 %>
 <tr><td colspan='3'><center><input type='submit' value='Upload Data'/></center></td></tr>
 </table>
-
+</center>
 </form>
 
 </body>
