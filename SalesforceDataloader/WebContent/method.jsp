@@ -30,7 +30,7 @@
 <body>
 <div>
 <div id="box" style="margin-left: 40%;margin-top: 10%;">
-    <form action="ConvertCSV" enctype="multipart/form-data" method="post">
+    <form action="ProcessCSV" enctype="multipart/form-data" method="post">
     <label for="selection">Client</label>
     <select name="selection" onchange="">
     <option>Affigient</option>

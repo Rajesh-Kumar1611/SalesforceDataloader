@@ -42,7 +42,6 @@ public static Map<String,String> getStandardFieldMapping()
 	standardfields.put( "Company Location Type","IMS_Location_Type__c"); 
 	standardfields.put( "Industry", "Industry");
 	standardfields.put( "Description","Description");
-
 	return standardfields;
 	
 }

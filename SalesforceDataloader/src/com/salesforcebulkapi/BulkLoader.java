@@ -259,26 +259,15 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
     BufferedReader rdr = new BufferedReader(new InputStreamReader(
         new FileInputStream(csvFileName)));
     // read the CSV header row
-    String headername=rdr.readLine();
-	 
+     String headername=rdr.readLine();
 	 Set s = bl_fieldsMap.entrySet();
 	 Iterator it = s.iterator();
 	 while(it.hasNext()){
 	 Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>)it.next();
 	 String key=entry.getKey();
 	 String[] value=entry.getValue();
-
-	 //System.out.println("Key is "+key+"<br>");
-	 //System.out.println("Value is "+value[0].toString()+"<br>");
-
-	 //System.out.println("-------------------<br>");
-	 
 	 headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key).toString());
-	 
-
 	 }
-	 System.out.println("header"+headername);
-    
     byte[] headerBytes = ( headername+ "\n").getBytes("UTF-8");
     int headerBytesLength = headerBytes.length;
     File tmpFile = File.createTempFile("bulkAPIInsert", ".csv");
