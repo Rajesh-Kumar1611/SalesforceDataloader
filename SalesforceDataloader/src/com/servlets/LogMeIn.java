@@ -42,6 +42,9 @@ public class LogMeIn extends HttpServlet {
 		if(username!=null&&password!=null)
 		{
 			try {
+			
+				request.getSession().setAttribute("username",username);
+				request.getSession().setAttribute("password",password);
 				response.sendRedirect("method.jsp");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

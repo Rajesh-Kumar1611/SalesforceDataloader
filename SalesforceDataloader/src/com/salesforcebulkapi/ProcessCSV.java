@@ -58,7 +58,7 @@ public class ProcessCSV extends HttpServlet {
 	
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws FileUploadException, IllegalStateException, IOException, ServletException
 	{
-
+		request.getSession().setAttribute("method",request.getParameter("selection"));
 		
 		try {
 			//String description = request.getParameter("filename"); // Retrieves <input type="text" name="description">

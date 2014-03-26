@@ -1,3 +1,4 @@
+<%@page import="java.util.TreeMap"%>
 <%@page import="com.salesforcebulkapi.BulkLoader"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.io.PrintWriter"%>
@@ -18,9 +19,10 @@
 <title>Insert title here</title>
 </head>
 <body>
-<% 
-Map<String,String[]> m=request.getParameterMap();
-BulkLoader.getMap(m,session.getAttribute("filename").toString(),session.getAttribute("username").toString(),session.getAttribute("password").toString());
+<%
+	Map<String,String[]> m=request.getParameterMap();
+//	System.out.print("Param Map"+m);
+BulkLoader.getMap(m,session.getAttribute("filename").toString(),session.getAttribute("username").toString(),session.getAttribute("password").toString(),session.getAttribute("method").toString());
 %>
 </body>
 </html>

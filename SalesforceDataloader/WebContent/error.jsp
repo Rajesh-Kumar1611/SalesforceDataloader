@@ -12,7 +12,7 @@
 </head>
 <body>
 <center>
-<h2>Oops!!! Some <font color='red'>ERROR</font> occured...<br>Please try again</h2>
+<h2>Oops!!! Something went wrong.Please try again or contact the System Administrator</h2>
 </center>
 </body>
 </html>

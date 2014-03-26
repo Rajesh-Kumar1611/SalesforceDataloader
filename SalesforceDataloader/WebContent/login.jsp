@@ -8,16 +8,14 @@
   <link rel="stylesheet" type="text/css" media="all" href="style.css">
   <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
-  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
-  
-</head>
+  </head>
 <body>
 <div>
 <div id="loginmodal" style="margin-left: 40%;margin-top: 10%;width: 400px;">
     <h1>Login</h1>
     <form id="loginform" name="loginform" method="post" action="LogMeIn">
       <label for="username">Username:</label>
-      <input type="text" name="username" id="username" class="txtfield" tabindex="1">
+      <input type="text" name="username" id="username" class="txtfield" tabindex="1" >
       <label for="password">Password:</label>
       <input type="password" name="password" id="password" class="txtfield" tabindex="2">
       <div class="center"><input  type="submit" name="loginbtn" id="loginbtn" class="flatbtn-blu hidemodal" value="Log In" tabindex="3" onclick="validatePassword()"/></div>

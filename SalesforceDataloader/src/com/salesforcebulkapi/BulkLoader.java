@@ -24,6 +24,8 @@ import com.sforce.async.JobStateEnum;
 import com.sforce.async.OperationEnum;
 import com.sforce.async.RestConnection;
 import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 
@@ -35,17 +37,21 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
   public static void main(String[] args) throws AsyncApiException,
       ConnectionException, IOException {
    
+	  BulkLoader bl=new BulkLoader();
+	  bl.getRestConnection("itstaff@invenio.com.isb", "Th3t@1126");
     //example.run();
   }
   
-  public static void initializeFields()
+  public static void getMap(Map map,String file,String username,String password,String method) throws ConnectionException
   {
-	salesforcecols=Maps.getAffigientFieldMapping();
-  }
-  public static void getMap(Map map,String file,String username,String password)
-  {
-	  initializeFields();
+	  Maps.setSf_username(username);
+	  Maps.setSf_password(password);
+	  salesforcecols.putAll(Maps.getFieldMapping(method));
 	  bl_fieldsMap=map;
+	  
+	  System.out.println("salesforcemap"+salesforcecols);
+	  System.out.println("blmap"+bl_fieldsMap);
+	  
 	  BulkLoader example = new BulkLoader();
 	  try {
 		example.runJob("Lead", username,password , file);
@@ -59,10 +65,8 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-	 
-
-
   }
+  
   /**
    * Creates a Bulk API job and uploads batches for a CSV file.
    */
@@ -170,6 +174,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
   /**
    * Create the RestConnection used to call Bulk API operations.
    */
+  
   private RestConnection getRestConnection(String userName, String password)
       throws ConnectionException, AsyncApiException {
     ConnectorConfig partnerConfig = new ConnectorConfig();
@@ -179,6 +184,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
     // Creating the connection automatically handles login and stores
     // the session in partnerConfig
     new PartnerConnection(partnerConfig);
+    
     // When PartnerConnection is instantiated, a login is implicitly
     // executed and, if successful,
     // a valid session is stored in the ConnectorConfig instance.
@@ -203,10 +209,17 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
   /**
    * Create and upload batches using a CSV file. The file into the appropriate
    * size batch files.
+ * @throws ConnectionException 
    */
   private List<BatchInfo> createBatchesFromCSVFile(RestConnection connection,
       JobInfo jobInfo, String csvFileName) throws IOException,
-      AsyncApiException {
+      AsyncApiException, ConnectionException {
+	  
+	  String assignmentkey=null;
+	  String recordtypekey=null;
+	  String assignmentId=null;
+	  String recordtypeid=null;
+	  
     List<BatchInfo> batchInfos = new ArrayList<BatchInfo>();
     BufferedReader rdr = new BufferedReader(new InputStreamReader(
         new FileInputStream(csvFileName)));
@@ -214,12 +227,36 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
      String headername=rdr.readLine();
 	 Set s = bl_fieldsMap.entrySet();
 	 Iterator it = s.iterator();
+	 
 	 while(it.hasNext()){
 	 Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>)it.next();
 	 String key=entry.getKey();
 	 String[] value=entry.getValue();
-	 headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key).toString());
+	 if(key.equals("assignmentruleid"))
+	 {
+		 assignmentkey=value[0].toString();
 	 }
+	 
+	 if(key.equals("recordtypeid"))
+	 {
+		 recordtypekey=value[0].toString();
+	 }
+	 
+	 try {
+		 
+		 headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key.trim()));
+	} catch (Exception e) {
+		System.out.println(e);
+	}
+	
+	 Maps map=new Maps();
+	 List<Map<String,String>> ids=map.getRecordtypeAndAssignmentId();
+	 assignmentId=ids.get(0).get(assignmentkey);
+	 recordtypeid=ids.get(1).get(recordtypekey);
+	
+	 }
+	 System.out.println(headername);
+	 headername=headername+",AssignmentRuleId__c,RecordTypeId__c";
     byte[] headerBytes = ( headername+ "\n").getBytes("UTF-8");
     int headerBytesLength = headerBytes.length;
     File tmpFile = File.createTempFile("bulkAPIInsert", ".csv");
@@ -233,7 +270,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
       int currentLines = 0;
       String nextLine;
       while ((nextLine = rdr.readLine()) != null) {
-        byte[] bytes = (nextLine + "\n").getBytes("UTF-8");
+        byte[] bytes = (nextLine + ","+assignmentId+","+recordtypeid+ "\n").getBytes("UTF-8");
         // Create a new batch when our batch size limit is reached
         if (currentBytes + bytes.length > maxBytesPerBatch
             || currentLines > maxRowsPerBatch) {

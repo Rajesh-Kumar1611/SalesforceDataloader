@@ -1,3 +1,8 @@
+<%@page import="java.util.List"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Enumeration"%>
 <%@page import="java.io.File"%>
 <%@page import="java.io.IOException"%>
 <%@page import="java.util.ArrayList"%>
@@ -11,6 +16,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<style type="text/css">
+select.combobox {
+    width: 182px;
+}
+</style>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Insert title here</title>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
@@ -21,7 +31,7 @@
   <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
 </head>
 <body>
-<form action="aftermap.jsp">
+<form action="assignmentrule.jsp">
 <center>
 <table>
 
@@ -39,14 +49,13 @@ try {
 		list_csvheaders.add(header.trim());
 	}
 	
-	Set<String> fields=Maps.getAffigientFieldMapping().keySet();
-	
+	Maps.initilizeCredentials(session.getAttribute("username").toString(),session.getAttribute("password").toString());
+	Set<String> fields=Maps.getFieldMapping(session.getAttribute("method").toString()).keySet();
 	for(String header:fields)
 	{
 %>		
 		<tr>
-<% 		
-		header=header.trim();
+<% 		header=header.trim();
 		if(list_csvheaders.contains(header))
 		{
 %>			
@@ -71,12 +80,10 @@ try {
 %>
 			</select>
 			</td>
-<%	
-		}
+<%		}
 		else
 		{
-%>			
-			<td><label><%=header%></label></td>
+%>			<td><label><%=header%></label></td>
 			<td><select name='<%=header%>'>
 			<option selected>**None**</option>
 <% 			
@@ -103,7 +110,7 @@ try {
   e.printStackTrace();
 }
 %>
-<tr><td colspan='3'><center><input type='submit' value='Upload Data'/></center></td></tr>
+<tr><td colspan='3'><center><input type='submit' value='Proceed'/></center></td></tr>
 </table>
 </center>
 </form>

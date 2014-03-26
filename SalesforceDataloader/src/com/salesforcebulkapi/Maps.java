@@ -1,69 +1,183 @@
 package com.salesforcebulkapi;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.sforce.soap.partner.PartnerConnection;
+import com.sforce.soap.partner.QueryResult;
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.ConnectionException;
+import com.sforce.ws.ConnectorConfig;
 
 public class Maps {
 
-public static Map<String,String> getStandardFieldMapping()
+static Map<String, String> standardfieldmap=new HashMap<String, String>();
+static String sf_username,sf_password;
+
+public static Map<String, String> getStandardfieldmap() {
+	return standardfieldmap;
+}
+public static void setStandardfieldmap(Map<String, String> standardfieldmap) {
+	Maps.standardfieldmap = standardfieldmap;
+}
+public static String getSf_username() {
+	return sf_username;
+}
+public static void setSf_username(String sf_username) {
+	Maps.sf_username = sf_username;
+}
+public static String getSf_password() {
+	return sf_password;
+}
+public static void setSf_password(String sf_password) {
+	Maps.sf_password = sf_password;
+}
+public static void initilizeCredentials(String username,String password)
 {
-	Map<String, String> standardfields = new HashMap<String,String>();
-	//Standard Fields
-	standardfields.put(	"Client ID", "IMS_Client_Id__c");
-	standardfields.put(	"Client Program Id","IMS_Client_Program_Id__c"); 
-	standardfields.put( "First Name","FirstName"  );
-	standardfields.put( "Last Name","LastName" );
-	standardfields.put( "Title", "Title");
-	standardfields.put( "Title Type", "IMS_Title_Type__c");
-	standardfields.put( "Company","Company"); 
-	standardfields.put( "Contact Purchasing Role", "IMS_Contact_Role__c");
-	standardfields.put( "Phone", "Phone");
-	standardfields.put( "Direct Phone", "IMS_Direct_Phone__c");
-	standardfields.put( "Fax", "Fax");
-	standardfields.put( "Mobile","MobilePhone" );
-	standardfields.put( "Email", "Email");
-	//standardfields.put( "Address1", "Address1");
-	//standardfields.put( "Address2","Address2"); 
-	standardfields.put( "City", "City");
-	standardfields.put( "State", "State");
-	standardfields.put( "Postal", "PostalCode");
-	standardfields.put( "Country", "Country");
-	standardfields.put( "SIC CODE", "IMS_SIC_Code__c");
-	standardfields.put( "SIC Description" ,"IMS_SIC_Description__c");
-	standardfields.put( "DUNS No", "IMS_DUNS_No__c");
-	standardfields.put( "NAICS Codes", "IMS_NAICS_Codes__c");
-	standardfields.put( "Employee Size", "IMS_Employee_Size__c");
-	standardfields.put(  "Revenue Size", "IMS_Revenue_Size__c");
-	standardfields.put(  "Lead Source","LeadSource");
-	standardfields.put(  "Record Source", "IMS_Record_Source__c");
-	standardfields.put(  "Record Source Detail","IMS_Record_Source_Detail__c"); 
-	standardfields.put( "Website", "Website");
-	standardfields.put( "Company Type","IMS_Company_Type__c"); 
-	standardfields.put( "Company Location Type","IMS_Location_Type__c"); 
-	standardfields.put( "Industry", "Industry");
-	standardfields.put( "Description","Description");
-	return standardfields;
-	
+sf_username=username;
+sf_password=password;
+}
+private  PartnerConnection getPartnerConnection() throws ConnectionException
+{
+
+		    ConnectorConfig partnerConfig = new ConnectorConfig();
+		    partnerConfig.setUsername(sf_username);
+		    partnerConfig.setPassword(sf_password);
+		    partnerConfig.setAuthEndpoint("https://test.salesforce.com/services/Soap/u/17.0");
+		    // Creating the connection automatically handles login and stores
+		    // the session in partnerConfig
+		    PartnerConnection partnerconnection=new PartnerConnection(partnerConfig);
+		    return partnerconnection;
 }
 
-public static Map<String,String> getAffigientFieldMapping()
+public  Set<String> getNames(String username,String password) throws ConnectionException
 {
-		//Affigient fields
-		Map<String, String> affigient_fields = new HashMap<String,String>();
-		affigient_fields.putAll(Maps.getStandardFieldMapping());
-		affigient_fields.put("AF Database Size","AF_Database_Size__c");
-		affigient_fields.put("AF Retention Requirement","AF_Retention_Requirement__c");
-		affigient_fields.put("Backup Software","IMS_Backup_Software__c");
-		affigient_fields.put("Govt Agency","IMS_Govt_Agency__c");
-		affigient_fields.put("Govt.Office","IMS_Govt_Office__c");
-		affigient_fields.put("AF Contractor","AF_Contractor__c");
-		affigient_fields.put("Network","Network__c");
-		affigient_fields.put("VISN","VISN__c");
-		return affigient_fields;
-}
+	setSf_username(username);
+	setSf_password(password);
+	Set<String> listofnames=new HashSet<String>();
+	PartnerConnection partnerconnection=getPartnerConnection();
+	QueryResult result = partnerconnection.query("select Name from ClientColumn__c");
+	for (SObject object : result.getRecords()) {
+	if(object!=null)
+	{
+		listofnames.add(object.getField("Name").toString());
+	}
+		
+	}
+	return listofnames;
+	}
 
 public static void main(String[] args) {
-	System.out.println(Maps.getAffigientFieldMapping());
+	Maps maps=new Maps();
+	try {
+		System.out.println(maps.getNames("itstaff@invenio.com.isb", "Th3t@1126"));
+	} catch (ConnectionException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 }
+
+public List<Map<String,String>> getRecordtypeAndAssignmentId() throws ConnectionException
+{
+	
+	List<Map<String,String>> listofid=new ArrayList<>();
+	PartnerConnection partnerconnection=getPartnerConnection();
+	 if(partnerconnection!=null)
+	  {
+	        try {
+	        		List<String> fetchidfrom=new ArrayList<>();
+	        		fetchidfrom.add("AssignmentRule");
+	        		fetchidfrom.add("RecordType");
+	        		
+	        		for(int i=0;i<fetchidfrom.size();i++)
+	        		{
+	        		Map<String, String> idmap=new HashMap<>();
+	        	    QueryResult result = partnerconnection.query("select Id, Name from " +fetchidfrom.get(i)+ " where SobjectType = 'Lead'");
+	        	    
+	                for (SObject object : result.getRecords()) {
+	                if(object!=null)
+	                {
+	                idmap.put(object.getField("Name").toString(), object.getField("Id").toString());	
+	                	
+	                }
+	                }
+	                
+	                listofid.add(idmap);
+	        		}
+	        }
+	        catch(Exception ex)
+	        {
+	        	
+	        }
+	  }
+	 return listofid;
+
+}
+
+
+private  Map<String,String> getFieldMap(String username,String password,String mappingname) throws ConnectionException
+{
+	PartnerConnection partnerconnection=getPartnerConnection();
+	Map<String, String> fieldmap=new HashMap<String, String>();
+	 if(partnerconnection!=null)
+	  {
+		 StringBuffer data=new StringBuffer();
+	        try {
+	        	    QueryResult result = partnerconnection.query("select Column1__c,Column2__c,Column3__c,Column4__c from ClientColumn__c where Name='"+mappingname+"'");
+	                for (SObject object : result.getRecords()) {
+	                if(object!=null)
+	                {
+	                	String sf_data=null;
+	                	sf_data = object.getField("Column1__c") != null ? object.getField("Column1__c").toString() : null ;
+	                  	sf_data = object.getField("Column2__c") != null ?  sf_data + "," + object.getField("Column2__c").toString() : sf_data;
+	                	sf_data = object.getField("Column3__c") != null ? sf_data + "," + object.getField("Column3__c").toString() : sf_data;
+	                	sf_data = object.getField("Column4__c") != null ?  sf_data + "," + object.getField("Column4__c").toString() : sf_data;
+	                	data.append(sf_data);
+	                }
+	                }
+	                
+	                //data.deleteCharAt(data.length()-1);
+	                 String [] pairs=data.toString().split(",");
+	                for(String pair:pairs)
+	                {
+	                   	if(pair.contains("-")&&!(pair.trim().equals("")))
+	                	{
+	                	String[] key_val=pair.split("-");
+	                	if(key_val.length==2)
+	                	{
+	                	fieldmap.put(key_val[0].trim(), key_val[1].trim());
+	                	}
+	                	}
+	                	
+	                }
+	            
+	        } catch (Exception e) {
+	            System.out.println("error:::" + e);
+	        }
+	        
+	  }
+	 return fieldmap;
+}
+
+public static Map<String,String> getFieldMapping(String method) throws ConnectionException
+{
+Maps map=new Maps();
+if(getStandardfieldmap()==null||getStandardfieldmap().size()<=0)
+{
+	setStandardfieldmap(map.getFieldMap(getSf_username(), getSf_password(), "Standard Fields"));
+}
+
+Map<String, String> affigient_fields =map.getFieldMap(getSf_username(),getSf_password(),method);
+if(getStandardfieldmap()!=null)
+{
+affigient_fields.putAll(getStandardfieldmap());
+}
+return affigient_fields;
+
+}
+
 
 }

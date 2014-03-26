@@ -1,3 +1,6 @@
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Set"%>
+<%@page import="com.salesforcebulkapi.Maps"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.HashMap"%>
@@ -32,12 +35,21 @@
 <div id="box" style="margin-left: 40%;margin-top: 10%;">
     <form action="ProcessCSV" enctype="multipart/form-data" method="post">
     <label for="selection">Client</label>
-    <select name="selection" onchange="">
-    <option>Affigient</option>
-    <option>Avnet NetApp Healthcare</option>
-    <option>Avnet NetApp</option>
-    <option>Avnet Compucom</option>
-    <option>BNA</option>
+    <select name="selection">
+    <%
+    request.getSession().setAttribute("username","itstaff@invenio.com.isb");
+	request.getSession().setAttribute("password","Th3t@1126");
+    Maps map=new Maps();
+    		
+    Set<String> listofnames=map.getNames(session.getAttribute("username").toString(),session.getAttribute("password").toString());
+	listofnames.remove("Standard Fields");   
+    for(String name:listofnames)
+    {
+    %>
+    <option><%=name %></option>
+   <%  	
+    }
+    %>
     </select>
     <br><label for="filename">Upload File:</label><input type="file" name="filename"/>
     <br><input type="submit" value="proceed"/>
