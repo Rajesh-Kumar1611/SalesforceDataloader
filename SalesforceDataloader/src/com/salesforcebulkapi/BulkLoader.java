@@ -243,8 +243,8 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 	 }
 	 
 	 try {
-		 
-		 headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key.trim()));
+		 System.out.println("value[0].toString() "+value[0].toString());
+		  headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key.trim()));
 	} catch (Exception e) {
 		System.out.println(e);
 	}
@@ -309,6 +309,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
       throws IOException, AsyncApiException {
     tmpOut.flush();
     tmpOut.close();
+    System.out.println(tmpFile.getAbsolutePath());
     FileInputStream tmpInputStream = new FileInputStream(tmpFile);
     try {
       BatchInfo batchInfo = connection.createBatchFromStream(jobInfo,

@@ -85,7 +85,7 @@ try {
 		{
 %>			<td><label><%=header%></label></td>
 			<td><select name='<%=header%>'>
-			<option selected>**None**</option>
+			<option selected>None</option>
 <% 			
 			for(String s:list_csvheaders)
 			{
