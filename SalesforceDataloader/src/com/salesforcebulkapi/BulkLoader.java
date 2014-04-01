@@ -1,40 +1,40 @@
 package com.salesforcebulkapi;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import org.supercsv.io.CsvMapReader;
+import org.supercsv.io.ICsvMapReader;
+import org.supercsv.prefs.CsvPreference;
 
 import com.sforce.async.AsyncApiException;
 import com.sforce.async.BatchInfo;
 import com.sforce.async.BatchStateEnum;
 import com.sforce.async.CSVReader;
+import com.sforce.async.ConcurrencyMode;
 import com.sforce.async.ContentType;
 import com.sforce.async.JobInfo;
 import com.sforce.async.JobStateEnum;
 import com.sforce.async.OperationEnum;
 import com.sforce.async.RestConnection;
 import com.sforce.soap.partner.PartnerConnection;
-import com.sforce.soap.partner.QueryResult;
-import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
-
 public class BulkLoader {
 
-static Map<String,String> salesforcecols=new HashMap<String,String>();
-static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
-	
-  public static void main(String[] args) throws AsyncApiException,
+static Map<String,String> displayname_to_salesforceapi_fieldsMap=new TreeMap<String,String>();
+static Map<String, String> displayname_to_csvfileheader_fieldsMap = new TreeMap<String,String>();
+public static void main(String[] args) throws AsyncApiException,
       ConnectionException, IOException {
    
 	  BulkLoader bl=new BulkLoader();
@@ -42,19 +42,16 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
     //example.run();
   }
   
-  public static void getMap(Map map,String file,String username,String password,String method) throws ConnectionException
+  public static String getMap(Map map,String file,String username,String password,String method) throws ConnectionException
   {
+	  String jobId=null;
 	  Maps.setSf_username(username);
 	  Maps.setSf_password(password);
-	  salesforcecols.putAll(Maps.getFieldMapping(method));
-	  bl_fieldsMap=map;
-	  
-	  System.out.println("salesforcemap"+salesforcecols);
-	  System.out.println("blmap"+bl_fieldsMap);
-	  
+	  displayname_to_salesforceapi_fieldsMap.putAll(Maps.getFieldMapping(method));
+	  displayname_to_csvfileheader_fieldsMap=map;
 	  BulkLoader example = new BulkLoader();
 	  try {
-		example.runJob("Lead", username,password , file);
+		jobId=example.runJob("Lead", username,password ,file);
 	} catch (AsyncApiException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -65,6 +62,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+	  return jobId;
   }
   
   /**
@@ -75,9 +73,9 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
     JobInfo job = createJob(sobjectType, connection);
     List<BatchInfo> batchInfoList = createBatchesFromCSVFile(connection, job,sampleFileName);
     closeJob(connection, job.getId());
-    awaitCompletion(connection, job, batchInfoList);
-    String result=checkResults(connection, job, batchInfoList);
-    return result;
+    String jobId=awaitCompletion(connection, job, batchInfoList);
+    checkResults(connection, job, batchInfoList);
+    return jobId;
   }
 
   /**
@@ -96,7 +94,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 
       List<String> row;
       while ((row = rdr.nextRecord()) != null) {
-        Map<String, String> resultInfo = new HashMap<String, String>();
+        Map<String, String> resultInfo = new TreeMap<String, String>();
         for (int i = 0; i < resultCols; i++) {
           resultInfo.put(resultHeader.get(i), row.get(i));
         }
@@ -130,10 +128,11 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
   /**
    * Wait for a job to complete by polling the Bulk API.
    */
-  private void awaitCompletion(RestConnection connection, JobInfo job,
+  private String awaitCompletion(RestConnection connection, JobInfo job,
     List<BatchInfo> batchInfoList) throws AsyncApiException {
+	  String JobId=null;
     long sleepTime = 0L;
-    Set<String> incomplete = new HashSet<String>();
+    Set<String> incomplete = new TreeSet<String>();
     for (BatchInfo bi : batchInfoList) {
       incomplete.add(bi.getId());
     }
@@ -150,11 +149,14 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
         if (b.getState() == BatchStateEnum.Completed
             || b.getState() == BatchStateEnum.Failed) {
           if (incomplete.remove(b.getId())) {
+        	  JobId=b.getJobId();
             System.out.println("BATCH STATUS:\n" + b);
+            
           }
         }
       }
     }
+    return JobId;
   }
 
   /**
@@ -166,7 +168,9 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
     job.setObject(sobjectType);
     job.setOperation(OperationEnum.insert);
     job.setContentType(ContentType.CSV);
+    job.setConcurrencyMode(ConcurrencyMode.Serial);
     job = connection.createJob(job);
+     
     System.out.println(job);
     return job;
   }
@@ -221,13 +225,13 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 	  String recordtypeid=null;
 	  
     List<BatchInfo> batchInfos = new ArrayList<BatchInfo>();
-    BufferedReader rdr = new BufferedReader(new InputStreamReader(
-        new FileInputStream(csvFileName)));
     // read the CSV header row
-     String headername=rdr.readLine();
-	 Set s = bl_fieldsMap.entrySet();
+     Set<String> csvfields=new TreeSet<String>();
+	 Set s = displayname_to_csvfileheader_fieldsMap.entrySet();
+	 Map<String,String> newmap= new TreeMap<String,String>();
+	 Map<String,String> csvfieldtodisplaymap= new TreeMap<String,String>();
+	  
 	 Iterator it = s.iterator();
-	 
 	 while(it.hasNext()){
 	 Map.Entry<String,String[]> entry = (Map.Entry<String,String[]>)it.next();
 	 String key=entry.getKey();
@@ -235,68 +239,115 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
 	 if(key.equals("assignmentruleid"))
 	 {
 		 assignmentkey=value[0].toString();
-	 }
-	 
-	 if(key.equals("recordtypeid"))
+	 }else if(key.equals("recordtypeid"))
 	 {
 		 recordtypekey=value[0].toString();
 	 }
-	 
-	 try {
-		 System.out.println("value[0].toString() "+value[0].toString());
-		  headername=headername.replaceFirst(value[0].toString(),salesforcecols.get(key.trim()));
-	} catch (Exception e) {
-		System.out.println(e);
-	}
+	 else
+	 {
+		 if(!(value[0].equals("None")))
+		 {
+		 csvfieldtodisplaymap.put(value[0],key); 
+		 newmap.put(value[0], displayname_to_salesforceapi_fieldsMap.get(key));
+		 csvfields.add(value[0]);
+		 }
+	 }
 	
+
+	 }
 	 Maps map=new Maps();
 	 List<Map<String,String>> ids=map.getRecordtypeAndAssignmentId();
 	 assignmentId=ids.get(0).get(assignmentkey);
 	 recordtypeid=ids.get(1).get(recordtypekey);
-	
-	 }
-	 System.out.println(headername);
-	 headername=headername+",AssignmentRuleId__c,RecordTypeId__c";
-    byte[] headerBytes = ( headername+ "\n").getBytes("UTF-8");
-    int headerBytesLength = headerBytes.length;
-    File tmpFile = File.createTempFile("bulkAPIInsert", ".csv");
-    // Split the CSV file into multiple batches
-    try {
-      FileOutputStream tmpOut = new FileOutputStream(tmpFile);
-      
-      int maxBytesPerBatch = 10000000; // 10 million bytes per batch
-      int maxRowsPerBatch = 10000; // 10 thousand rows per batch
-      int currentBytes = 0;
-      int currentLines = 0;
-      String nextLine;
-      while ((nextLine = rdr.readLine()) != null) {
-        byte[] bytes = (nextLine + ","+assignmentId+","+recordtypeid+ "\n").getBytes("UTF-8");
-        // Create a new batch when our batch size limit is reached
-        if (currentBytes + bytes.length > maxBytesPerBatch
-            || currentLines > maxRowsPerBatch) {
-          createBatch(tmpOut, tmpFile, batchInfos, connection, jobInfo);
-          currentBytes = 0;
-          currentLines = 0;
-        }
-        if (currentBytes == 0) {
-          tmpOut = new FileOutputStream(tmpFile);
-          tmpOut.write(headerBytes);
-          currentBytes = headerBytesLength;
-          currentLines = 1;
-        }
-        tmpOut.write(bytes);
-        currentBytes += bytes.length;
-        currentLines++;
-      }
-      // Finished processing all rows
-      // Create a final batch for any remaining data
-      if (currentLines > 1) {
-        createBatch(tmpOut, tmpFile, batchInfos, connection, jobInfo);
-      }
-    } finally {
-      tmpFile.delete();
-      rdr.close();
-    }
+
+		ICsvMapReader mapReader = null;
+		//FileWriter writer=null;
+		FileOutputStream writer=null;
+		File tmpFile = File.createTempFile("SFBulkCSV", ".csv");	
+     try {
+    	 int maxBytesPerBatch = 10000000; // 10 million bytes per batch
+         int maxRowsPerBatch = 10000; // 10 thousand rows per batch	
+         int currentBytes = 0;
+         int currentLines = 0;
+         writer=new FileOutputStream(tmpFile);
+         mapReader = new CsvMapReader(new FileReader(csvFileName), CsvPreference.STANDARD_PREFERENCE);
+     	StringBuffer fileheader=new StringBuffer();
+     	for(String field:csvfields)
+     	 {
+     			fileheader.append(newmap.get(field));
+     			fileheader.append(",");
+     	 }
+     		fileheader.append("AssignmentRuleId__c,RecordTypeId__c");
+     		fileheader.append("\n");
+     		byte[] headerBytes =  fileheader.toString().getBytes("UTF-8");
+     	    int headerBytesLength = headerBytes.length;
+     		
+             // the header columns are used as the keys to the Map
+             String[] header = mapReader.getHeader(true);
+
+             Map<String, String> iMap;
+             while( (iMap = mapReader.read(header)) != null) {
+            	 StringBuffer sbdata=new StringBuffer();
+            	 //code to create a new csv file
+            	 for(String data:csvfields)
+            	 {
+            		
+            		if(iMap.get(data)!=null&&iMap.get(data).contains(","))
+            		{
+            		sbdata.append("\"");
+            		sbdata.append(iMap.get(data));
+            		sbdata.append("\"");
+            		}else
+            		{
+            		sbdata.append(iMap.get(data)==null?"":iMap.get(data));
+            		}
+            		sbdata.append(","); 
+            	 }
+            	 sbdata.append(assignmentId);
+            	 sbdata.append(",");
+            	 sbdata.append(recordtypeid);
+            	 sbdata.append("\n");
+            	 byte[] bytes=sbdata.toString().getBytes("UTF-8");
+                 if (currentBytes + bytes.length > maxBytesPerBatch|| currentLines > maxRowsPerBatch) {
+                	 createBatch(tmpFile, batchInfos, connection, jobInfo);
+                	 currentBytes = 0;
+                     currentLines = 0;
+                 }
+                 
+                 if (currentBytes == 0) {
+                	 writer.write(fileheader.toString().getBytes("UTF-8"));
+                     currentBytes = headerBytesLength;
+                     currentLines = 1;
+                   }
+            	 
+            	 writer.write(sbdata.toString().getBytes("UTF-8"));
+            	 currentBytes += bytes.length;
+                 currentLines++;
+             }
+             // Finished processing all rows
+             // Create a final batch for any remaining data
+             if (currentLines > 1) {
+            	 createBatch(tmpFile, batchInfos, connection, jobInfo);
+             }
+             
+     }finally {
+             if( mapReader != null ) {
+                     mapReader.close();
+             }
+             
+             if(writer!=null)
+             {
+             	writer.close();
+             	tmpFile.delete();
+             	File f=new File(csvFileName);
+             	System.out.println(f.getAbsolutePath());
+             	f.delete();
+             	
+             	
+             }
+             
+     }
+
     return batchInfos;
   }
 
@@ -304,16 +355,12 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
    * Create a batch by uploading the contents of the file. This closes the
    * output stream.
    */
-  private void createBatch(FileOutputStream tmpOut, File tmpFile,
+  private void createBatch(File tmpFile,
       List<BatchInfo> batchInfos, RestConnection connection, JobInfo jobInfo)
       throws IOException, AsyncApiException {
-    tmpOut.flush();
-    tmpOut.close();
-    System.out.println(tmpFile.getAbsolutePath());
     FileInputStream tmpInputStream = new FileInputStream(tmpFile);
     try {
-      BatchInfo batchInfo = connection.createBatchFromStream(jobInfo,
-          tmpInputStream);
+      BatchInfo batchInfo = connection.createBatchFromStream(jobInfo,tmpInputStream);
       System.out.println(batchInfo);
       batchInfos.add(batchInfo);
 
@@ -321,4 +368,7 @@ static Map<String, String> bl_fieldsMap = new HashMap<String,String>();
       tmpInputStream.close();
     }
   }
+ 
 }
+
+

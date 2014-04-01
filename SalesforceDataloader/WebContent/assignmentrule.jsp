@@ -10,16 +10,53 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-  <title>Login</title>
+  <title>Assignment Rules</title>
   <link rel="stylesheet" type="text/css" media="all" href="style.css">
   <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
   <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
-<title>Insert title here</title>
+  <style>
+  #loading-div-background 
+    {
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+     }
+     
+ #loading-div
+    {
+         width: 300px;
+         height: 200px;
+         text-align:center;
+         position:absolute;
+         left: 50%;
+         top: 50%;
+         margin-left:-150px;
+         margin-top: -100px;
+     }   
+  </style>
+  <script type="text/javascript">
+        $(document).ready(function () {
+            $("#loading-div-background").css({ opacity: 0.8 });
+           
+        });
+
+        function ShowProgressAnimation() {
+        
+            $("#loading-div-background").show();
+
+        }
+
+    </script>
 </head>
 
 <body>
-<form action="aftermap.jsp">
+
+
+<form action="viewreport.jsp" method="post">
 <center>
 <table>
 <%
@@ -59,7 +96,7 @@
 	</tr>
 	
 		<td colspan="2">
-			<center><input type='submit' value='insert'></center>
+			<center><input type='submit' value='insert' onclick="ShowProgressAnimation();"></center>
 		</td>
 	</tr>
 	<% 
@@ -75,5 +112,10 @@
 	</table>
 	</center>
 	</form>
+	    <div id="loading-div-background">
+    <div id="loading-div" class="ui-corner-all" >
+      <img src="images/loading.gif" alt="Please Wait..."/>
+     </div>
+	</div>
 </body>
 </html>

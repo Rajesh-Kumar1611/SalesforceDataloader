@@ -18,15 +18,15 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 /**
  * Servlet implementation class ConvertCSV
  */
-@WebServlet("/ProcessCSV")
+@WebServlet("/UploadFile")
 @MultipartConfig
-public class ProcessCSV extends HttpServlet {
+public class UploadFile extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ProcessCSV() {
+    public UploadFile() {
         super();
         // TODO Auto-generated constructor stub
     }

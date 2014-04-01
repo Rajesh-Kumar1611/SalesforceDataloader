@@ -1,7 +1,7 @@
 package com.salesforcebulkapi;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +14,7 @@ import com.sforce.ws.ConnectorConfig;
 
 public class Maps {
 
-static Map<String, String> standardfieldmap=new HashMap<String, String>();
+static Map<String, String> standardfieldmap=new TreeMap<String, String>();
 static String sf_username,sf_password;
 
 public static Map<String, String> getStandardfieldmap() {
@@ -42,8 +42,7 @@ sf_password=password;
 }
 private  PartnerConnection getPartnerConnection() throws ConnectionException
 {
-
-		    ConnectorConfig partnerConfig = new ConnectorConfig();
+		   ConnectorConfig partnerConfig = new ConnectorConfig();
 		   partnerConfig.setUsername(sf_username);
 		   partnerConfig.setPassword(sf_password);
 		    partnerConfig.setAuthEndpoint("https://test.salesforce.com/services/Soap/u/17.0");
@@ -57,7 +56,7 @@ public  Set<String> getNames(String username,String password) throws ConnectionE
 {
 	setSf_username(username);
 	setSf_password(password);
-	Set<String> listofnames=new HashSet<String>();
+	Set<String> listofnames=new TreeSet<String>();
 	PartnerConnection partnerconnection=getPartnerConnection();
 	QueryResult result = partnerconnection.query("select Name from ClientColumn__c");
 	for (SObject object : result.getRecords()) {
@@ -94,7 +93,7 @@ public List<Map<String,String>> getRecordtypeAndAssignmentId() throws Connection
 	        		
 	        		for(int i=0;i<fetchidfrom.size();i++)
 	        		{
-	        		Map<String, String> idmap=new HashMap<>();
+	        		Map<String, String> idmap=new TreeMap<>();
 	        	    QueryResult result = partnerconnection.query("select Id, Name from " +fetchidfrom.get(i)+ " where SobjectType = 'Lead'");
 	        	    
 	                for (SObject object : result.getRecords()) {
@@ -121,7 +120,7 @@ public List<Map<String,String>> getRecordtypeAndAssignmentId() throws Connection
 private  Map<String,String> getFieldMap(String username,String password,String mappingname) throws ConnectionException
 {
 	PartnerConnection partnerconnection=getPartnerConnection();
-	Map<String, String> fieldmap=new HashMap<String, String>();
+	Map<String, String> fieldmap=new TreeMap<String, String>();
 	 if(partnerconnection!=null)
 	  {
 		 StringBuffer data=new StringBuffer();
