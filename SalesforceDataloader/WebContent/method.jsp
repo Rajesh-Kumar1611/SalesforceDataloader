@@ -10,18 +10,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Upload CSV File</title>
   <link rel="stylesheet" type="text/css" media="all" href="style.css">
-  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-  <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
-  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script>
   <style type="text/css">
   #box {
-  width: 350px;
-  height: 180px;
+  width: 390px;
+  height: 220px;
   padding: 15px 20px;
-/*   background: #F1F1F1; */
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
   border-radius: 6px;
@@ -30,11 +28,7 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 }
 
- 
-  </style>
-  
-  <style>
-  #loading-div-background 
+#loading-div-background 
     {
         display:none;
         position:fixed;
@@ -72,10 +66,17 @@
 </head>
 <body>
 <div>
-<div id="box" style="margin-left: 40%;margin-top: 10%;">
+<div id="box" style="position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-top: 30px;
+    ">
     <form action="UploadFile" enctype="multipart/form-data" method="post">
     <label for="selection" style="font-weight: bold;">Client</label>
-    <select name="selection" style="margin-left: 33px;">
+    <select name="selection" class="btn-block" style="display: initial;" >
     <%
     request.getSession().setAttribute("username","itstaff@invenio.com.isb");
 	request.getSession().setAttribute("password","Th3t@1126");
@@ -92,7 +93,7 @@
     %>
     </select>
     <br><label for="filename" style="font-weight: bold;">Upload File:</label><input type="file" name="filename"/>
-    <br><input type="submit" value="proceed" onclick="ShowProgressAnimation();" style=" margin-top: 77px;margin-left: 118px;"/>
+    <br><input type="submit" class="btn btn-success btn-block" value="proceed" onclick="ShowProgressAnimation();" style="margin-top: 30px;"/>
     </form>
     <div id="loading-div-background">
     <div id="loading-div" class="ui-corner-all" >

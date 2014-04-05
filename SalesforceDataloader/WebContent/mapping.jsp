@@ -25,9 +25,9 @@ select.combobox {
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
   <title>Field Mappings</title>
   <link rel="stylesheet" type="text/css" media="all" href="style.css">
-  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-  <script type="text/javascript" charset="utf-8" src="js/jquery.leanModal.min.js"></script>
-  <!-- jQuery plugin leanModal under MIT License http://leanmodal.finelysliced.com.au/ -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js"></script>
   <style>
   #loading-div-background 
     {
@@ -146,7 +146,7 @@ try {
 			<select name='<%=header%>' onchange="changeLabel(<%=createdIds%>,this.value,this.name)">
 			<option>None</option>
 <%			
-			for(String s:list_csvheaders)
+		for(String s:list_csvheaders)
 			{
 				
 				if(s.equalsIgnoreCase(header))
@@ -170,7 +170,7 @@ try {
 		else
 		{
 %>			<td><label style="font-weight: bold;"><%=header%></label></td>
-			<td><select  onchange="changeLabel(<%=createdIds%>,this.value,this.name);" name='<%=header%>'>
+			<td><select  onchange="changeLabel(<%=createdIds%>,this.value,this.name);" name='<%=header%>' class="required">
 			<option selected>None</option>
 <% 			
 			for(String s:list_csvheaders)
@@ -207,7 +207,7 @@ try {
   e.printStackTrace();
 }
 %>
-<tr><td colspan='3'><center><input type='submit' value='Proceed' onclick="ShowProgressAnimation();"/></center></td></tr>
+<tr><td colspan='3'><center><input type='submit' value='Proceed' onclick="ShowProgressAnimation();" class="btn btn-success btn-block"/></center></td></tr>
 </table>
 </center>
 </form>

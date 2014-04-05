@@ -36,8 +36,7 @@ static Map<String,String> displayname_to_salesforceapi_fieldsMap=new TreeMap<Str
 static Map<String, String> displayname_to_csvfileheader_fieldsMap = new TreeMap<String,String>();
 public static void main(String[] args) throws AsyncApiException,
       ConnectionException, IOException {
-   
-	  BulkLoader bl=new BulkLoader();
+   	  BulkLoader bl=new BulkLoader();
 	  bl.getRestConnection("itstaff@invenio.com.isb", "Th3t@1126");
     //example.run();
   }
@@ -180,7 +179,10 @@ public static void main(String[] args) throws AsyncApiException,
    */
   
   private RestConnection getRestConnection(String userName, String password)
+  	
       throws ConnectionException, AsyncApiException {
+	  
+	 System.out.println("username"+userName+" Password"+password); 
     ConnectorConfig partnerConfig = new ConnectorConfig();
     partnerConfig.setUsername(userName);
     partnerConfig.setPassword(password);
@@ -291,17 +293,20 @@ public static void main(String[] args) throws AsyncApiException,
             	 //code to create a new csv file
             	 for(String data:csvfields)
             	 {
-            		
-            		if(iMap.get(data)!=null&&iMap.get(data).contains(","))
+            		String celldata=iMap.get(data);
+            		if(celldata!=null)
             		{
-            		sbdata.append("\"");
-            		sbdata.append(iMap.get(data));
-            		sbdata.append("\"");
-            		}else
-            		{
-            		sbdata.append(iMap.get(data)==null?"":iMap.get(data));
+            			celldata=celldata.replaceAll("\"", "'");
+            			sbdata.append(celldata.contains(",")?"\""+celldata+"\"":celldata);
+            			sbdata.append(",");
+            			
             		}
-            		sbdata.append(","); 
+            		else
+            		{
+            			sbdata.append("");
+                		sbdata.append(","); 
+            		}
+            		
             	 }
             	 sbdata.append(assignmentId);
             	 sbdata.append(",");
@@ -342,8 +347,6 @@ public static void main(String[] args) throws AsyncApiException,
              	File f=new File(csvFileName);
              	System.out.println(f.getAbsolutePath());
              	f.delete();
-             	
-             	
              }
              
      }

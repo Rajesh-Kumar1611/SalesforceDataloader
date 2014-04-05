@@ -21,7 +21,7 @@
 	String jobid=BulkLoader.getMap(m,session.getAttribute("filename").toString(),session.getAttribute("username").toString(),session.getAttribute("password").toString(),session.getAttribute("method").toString());
 %>
 	<center>
-		<a href="https://cs10.salesforce.com/<%=jobid%>" target="_blank">View Report</a>
+		<a href="https://na14.salesforce.com/<%=jobid%>" target="_blank">View Report</a>
 	</center>
 	<%session.invalidate();%>
 	<a href="method.jsp">Home</a>
