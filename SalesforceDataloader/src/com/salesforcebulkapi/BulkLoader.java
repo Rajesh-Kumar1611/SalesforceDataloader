@@ -186,7 +186,7 @@ public static void main(String[] args) throws AsyncApiException,
     ConnectorConfig partnerConfig = new ConnectorConfig();
     partnerConfig.setUsername(userName);
     partnerConfig.setPassword(password);
-    partnerConfig.setAuthEndpoint("https://test.salesforce.com/services/Soap/u/17.0");
+    partnerConfig.setAuthEndpoint("https://login.salesforce.com/services/Soap/u/17.0");
     // Creating the connection automatically handles login and stores
     // the session in partnerConfig
     new PartnerConnection(partnerConfig);

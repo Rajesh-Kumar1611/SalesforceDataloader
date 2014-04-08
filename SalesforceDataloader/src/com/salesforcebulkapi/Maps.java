@@ -45,7 +45,7 @@ private  PartnerConnection getPartnerConnection() throws ConnectionException
 		   ConnectorConfig partnerConfig = new ConnectorConfig();
 		   partnerConfig.setUsername(sf_username);
 		   partnerConfig.setPassword(sf_password);
-		    partnerConfig.setAuthEndpoint("https://test.salesforce.com/services/Soap/u/17.0");
+		    partnerConfig.setAuthEndpoint("https://login.salesforce.com/services/Soap/u/17.0");
 		    // Creating the connection automatically handles login and stores
 		    // the session in partnerConfig
 		    PartnerConnection partnerconnection=new PartnerConnection(partnerConfig);

@@ -13,7 +13,7 @@
   <title>Upload CSV File</title>
   <link rel="stylesheet" type="text/css" media="all" href="style.css">
   <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
-  <script src="http://code.jquery.com/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
   <script src="bootstrap/js/bootstrap.min.js"></script>
   <style type="text/css">
   #box {
@@ -78,8 +78,8 @@
     <label for="selection" style="font-weight: bold;">Client</label>
     <select name="selection" class="btn-block" style="display: initial;" >
     <%
-    request.getSession().setAttribute("username","itstaff@invenio.com.isb");
-	request.getSession().setAttribute("password","Th3t@1126");
+    request.getSession().setAttribute("username","itstaff@invenio.com");
+	request.getSession().setAttribute("password","Th3t@02239clkXHC9LZ0dHh9XbydSL7Q2");
     Maps map=new Maps();
     		
     Set<String> listofnames=map.getNames(session.getAttribute("username").toString(),session.getAttribute("password").toString());

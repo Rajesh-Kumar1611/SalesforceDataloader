@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="style.css">
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"
 	media="screen">
-<script src="http://code.jquery.com/jquery.js"></script>
+<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
 <script src="bootstrap/js/bootstrap.min.js"></script>
 <style>
 #box {
